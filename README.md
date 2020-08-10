@@ -32,7 +32,7 @@ The axes are based on raw data collection. It may be necessary to rotate or inve
 ## Sensor Location:
 The physical sensor is offset from the centre of the imaging plane by the following dimensions. The Y and Z dimensions are the same for all models and the X dimension is model specific as shown in the table below.
 
-![Axes](axes-v1.png)
+![Axes](blob/axes-v1.png)
 
 Distance from scanning plane to internal sensor by scanner model (first generation Clarius):
 
