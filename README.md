@@ -5,9 +5,11 @@ This repository contains all related items for using the integrated 9-DOF inerti
 
 Images, videos, and raw data will include IMU meta information when the sensor has been enabled. To enable, press the IMU icon from within the modes menu within the Clarius App.
 
+![IMU Button](blob/imu.png)
+
 Inertial data can be accessed by:
 - Using the Listen API to stream images in real-time
-- Accessing stored  images, videos, and raw data from Clarius Cloud
+- Accessing stored images, videos, and raw data from Clarius Cloud
 
 The inertial data is sent or stored in text & binary formats, depending on the mode of acquisition, and includes:
 - Linear acceleration (accelerometer)
@@ -21,15 +23,17 @@ There are two calibration modes:
 - Static calibration, where the probe must remain still on a flat surface
 - Motion calibration, where the probe should be rotated across all axes for approximately 10 seconds
 
+![IMU Button](blob/imu.png)
+
 ## Units
 - Acceleration is normalized to gravity (m/s2) / (m/s2)
 - Angular rate is provided in degrees per second (dps)
 - Magnetic flux density is provided in Gauss
 
-## Axis Orientation:
+## Axis Orientation
 The axes are based on raw data collection. It may be necessary to rotate or invert the raw measurements to ensure they align with the desired reference point(s). For example, multiplying both the X and Y measurements by -1 would be a 180° degree rotation around the Z axis.
 
-## Sensor Location:
+## Sensor Location
 The physical sensor is offset from the centre of the imaging plane by the following dimensions. The Y and Z dimensions are the same for all models and the X dimension is model specific as shown in the table below.
 
 ![Axes](blob/axes-v1.png)
