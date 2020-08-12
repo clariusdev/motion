@@ -23,7 +23,7 @@ There are two calibration modes:
 - Static calibration, where the probe must remain still on a flat surface
 - Motion calibration, where the probe should be rotated across all axes for approximately 10 seconds
 
-![IMU Button](blob/imu.png)
+![IMU Button](blob/settings.png)
 
 ## Units
 - Acceleration is normalized to gravity (m/s2) / (m/s2)
