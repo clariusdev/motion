@@ -1,23 +1,21 @@
 #!/usr/bin/env python
 
-import os.path
 import sys
-
+import os.path
 import pycast
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.Qt3DCore import (Qt3DCore)
-from PySide2.Qt3DExtras import (Qt3DExtras)
-from PySide2.Qt3DRender import (Qt3DRender)
 from PySide2.QtCore import (QUrl)
 from PySide2.QtCore import Slot
 from PySide2.QtGui import (QQuaternion, QVector3D)
+from PySide2.Qt3DCore import (Qt3DCore)
+from PySide2.Qt3DExtras import (Qt3DExtras)
+from PySide2.Qt3DRender import (Qt3DRender)
 
-
+# custom event for handling change in freeze state
 class FreezeEvent(QtCore.QEvent):
     def __init__(self, frozen):
         super().__init__(QtCore.QEvent.User)
         self.frozen = frozen
-
 
 # custom event for handling button presses
 class ButtonEvent(QtCore.QEvent):
@@ -26,12 +24,10 @@ class ButtonEvent(QtCore.QEvent):
         self.btn = btn
         self.clicks = clicks
 
-
 # custom event for handling new images
 class ImageEvent(QtCore.QEvent):
     def __init__(self):
         super().__init__(QtCore.QEvent.Type(QtCore.QEvent.User + 2))
-
 
 # manages custom events posted from callbacks, then relays as signals to the main widget
 class Signaller(QtCore.QObject):
@@ -56,12 +52,10 @@ class Signaller(QtCore.QObject):
             self.image.emit(self.qw, self.qx, self.qy, self.qz)
         return True
 
-
 # global required for the listen api callbacks
 signaller = Signaller()
 
-
-# 3D render class
+# 3d render class
 class ScannerWindow(Qt3DExtras.Qt3DWindow):
     qw = 0.5
     qx = 0.5
@@ -72,7 +66,7 @@ class ScannerWindow(Qt3DExtras.Qt3DWindow):
     def __init__(self):
         super(ScannerWindow, self).__init__()
 
-        # Camera
+        # camera
         self.camera().lens().setPerspectiveProjection(50, 16 / 9, 0.1, 1000)
         self.camera().setPosition(QVector3D(0, 0, 30))
         self.camera().setViewCenter(QVector3D(0, 0, 0))
@@ -106,7 +100,6 @@ class ScannerWindow(Qt3DExtras.Qt3DWindow):
         self.scanner.setSource(QUrl.fromLocalFile("scanner.obj"))
         self.scannerEntity.addComponent(self.scanner)
         self.addTransform()
-
 
 # main widget with controls and ui
 class MainWidget(QtWidgets.QMainWindow):
@@ -192,7 +185,6 @@ class MainWidget(QtWidgets.QMainWindow):
         self.cast.destroy()
         QtWidgets.QApplication.quit()
 
-
 ## called when a new processed image is streamed
 # @param image the scan-converted image data
 # @param width width of the image in pixels
@@ -211,7 +203,6 @@ def newProcessedImage(image, width, height, bpp, micronsPerPixel, timestamp, imu
         QtCore.QCoreApplication.postEvent(signaller, evt)
     return
 
-
 ## called when a new raw image is streamed
 # @param image the raw pre scan-converted image data, uncompressed 8-bit or jpeg compressed
 # @param lines number of lines in the data
@@ -224,14 +215,12 @@ def newProcessedImage(image, width, height, bpp, micronsPerPixel, timestamp, imu
 def newRawImage(image, lines, samples, bps, axial, lateral, timestamp, jpg):
     return
 
-
 ## called when freeze state changes
 # @param frozen the freeze state
 def freezeFn(frozen):
     evt = FreezeEvent(frozen)
     QtCore.QCoreApplication.postEvent(signaller, evt)
     return
-
 
 ## called when a button is pressed
 # @param button the button that was pressed
@@ -241,7 +230,6 @@ def buttonsFn(button, clicks):
     QtCore.QCoreApplication.postEvent(signaller, evt)
     return
 
-
 ## main function
 def main():
     cast = pycast.Caster(newProcessedImage, newRawImage, freezeFn, buttonsFn)
@@ -250,7 +238,6 @@ def main():
     widget.resize(640, 480)
     widget.show()
     sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
     main()
