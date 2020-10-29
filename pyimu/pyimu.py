@@ -63,6 +63,7 @@ class ScannerWindow(Qt3DExtras.Qt3DWindow):
     qz = 0.5
     scannerTransform = Qt3DCore.QTransform()
 
+
     def __init__(self):
         super(ScannerWindow, self).__init__()
 
@@ -88,7 +89,8 @@ class ScannerWindow(Qt3DExtras.Qt3DWindow):
         self.orientation = QQuaternion(self.qw, self.qx, self.qy, self.qz)
         self.axisCorrection = QQuaternion.fromEulerAngles(0, 180, 90)
         self.modelCorrection = QQuaternion.fromEulerAngles(-90, 0, 90)
-        self.correctedOrientation = self.orientation * self.modelCorrection * self.axisCorrection
+        self.modelRotation = self.orientation * self.axisCorrection
+        self.correctedOrientation = self.modelCorrection * self.modelRotation
         self.scannerTransform.setRotation(self.correctedOrientation)
         self.scannerEntity.addComponent(self.scannerTransform)
 
