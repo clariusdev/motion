@@ -8,7 +8,7 @@ Images, videos, and raw data will include IMU meta information when the sensor h
 ![IMU Button](blob/imu.png)
 
 Inertial data can be accessed by:
-- Using the Listen API to stream images in real-time
+- Using the Cast API to stream images in real-time
 - Accessing stored images, videos, and raw data from Clarius Cloud
 
 The inertial data is sent or stored in text & binary formats, depending on the mode of acquisition, and includes:
@@ -48,9 +48,9 @@ Distance from scanning plane to internal sensor by scanner model (first generati
 
 ## Data Collection
 
-### Listen API
+### Cast API
 
-The Listen API allows images and inertial data to be collected in real-time. When a new image is received, a set of inertial data will be passed to the new image callback function. Several inertial measurements may acquired for a single image, depending on the imaging frame rate. The ClariusPosInfo struct contains the inertial data for each measurement and contains 14 pieces of information:
+The Cast API allows images and inertial data to be collected in real-time. When a new image is received, a set of inertial data will be passed to the new image callback function. Several inertial measurements may acquired for a single image, depending on the imaging frame rate. The ClariusPosInfo struct contains the inertial data for each measurement and contains 14 pieces of information:
 - Data timestamp
 - 3 gyroscope axes
 - 3 accelerometer axes
@@ -62,4 +62,4 @@ The Listen API allows images and inertial data to be collected in real-time. Whe
 
 Clarius Cloud is a convenient way to store and access images and data. Inertial information can be uploaded to Clarius Cloud after activating the sensor. Raw data can be downloaded from Clarius cloud in a compressed folder for offline analysis; the compressed file contains timestamp_imu.yml which contains the inertial measurements associated with the raw data and images collected.
 
-Each entry in imu.yml file contains the same information as specified in the ClariusPosInfo structure for the Listen API.
+Each entry in imu.yml file contains the same information as specified in the ClariusPosInfo structure for the Cast API.
