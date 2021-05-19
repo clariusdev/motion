@@ -63,7 +63,6 @@ class ScannerWindow(Qt3DExtras.Qt3DWindow):
     qz = 0.5
     scannerTransform = Qt3DCore.QTransform()
 
-
     def __init__(self):
         super(ScannerWindow, self).__init__()
 
@@ -217,6 +216,18 @@ def newProcessedImage(image, width, height, bpp, micronsPerPixel, timestamp, imu
 def newRawImage(image, lines, samples, bps, axial, lateral, timestamp, jpg):
     return
 
+## called when a new spectrum image is streamed
+# @param image the spectral image
+# @param lines number of lines in the spectrum
+# @param samples number of samples per line
+# @param bps bits per sample
+# @param period line repetition period of spectrum
+# @param micronsPerSample microns per sample for an m spectrum
+# @param velocityPerSample velocity per sample for a pw spectrum
+# @param pw flag that is true for a pw spectrum, false for an m spectrum
+def newSpectrumImage(image, lines, samples, bps, period, micronsPerSample, velocityPerSample, pw):
+    return
+
 ## called when freeze state changes
 # @param frozen the freeze state
 def freezeFn(frozen):
@@ -234,7 +245,7 @@ def buttonsFn(button, clicks):
 
 ## main function
 def main():
-    cast = pycast.Caster(newProcessedImage, newRawImage, freezeFn, buttonsFn)
+    cast = pycast.Caster(newProcessedImage, newRawImage, newSpectrumImage, freezeFn, buttonsFn)
     app = QtWidgets.QApplication(sys.argv)
     widget = MainWidget(cast)
     widget.resize(640, 480)
