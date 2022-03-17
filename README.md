@@ -27,7 +27,7 @@ There are two calibration modes:
 
 ## Units
 - Acceleration is normalized to gravity (m/s2) / (m/s2)
-- Angular rate is provided in degrees per second (dps)
+- Angular rate is provided in radian per second (rps)
 - Magnetic flux density is provided in Gauss
 
 ## Axis Orientation
