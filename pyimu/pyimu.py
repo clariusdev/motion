@@ -1,21 +1,28 @@
 #!/usr/bin/env python
 
-import sys
+import ctypes
 import os.path
-import pycast
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import (QUrl)
-from PySide2.QtCore import Slot
-from PySide2.QtGui import (QQuaternion, QVector3D)
-from PySide2.Qt3DCore import (Qt3DCore)
-from PySide2.Qt3DExtras import (Qt3DExtras)
-from PySide2.Qt3DRender import (Qt3DRender)
+import sys
+
+if sys.platform.startswith("linux"):
+    libcast = ctypes.CDLL("./libcast.so", ctypes.RTLD_GLOBAL)  # load the libcast.so shared library
+    pyclariuscast = ctypes.cdll.LoadLibrary("./pyclariuscast.so")  # load the pyclariuscast.so shared library
+
+import pyclariuscast
+from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6.Qt3DCore import Qt3DCore
+from PySide6.Qt3DExtras import Qt3DExtras
+from PySide6.Qt3DRender import Qt3DRender
+from PySide6.QtCore import QUrl, Slot
+from PySide6.QtGui import QQuaternion, QVector3D
+
 
 # custom event for handling change in freeze state
 class FreezeEvent(QtCore.QEvent):
     def __init__(self, frozen):
         super().__init__(QtCore.QEvent.User)
         self.frozen = frozen
+
 
 # custom event for handling button presses
 class ButtonEvent(QtCore.QEvent):
@@ -24,10 +31,12 @@ class ButtonEvent(QtCore.QEvent):
         self.btn = btn
         self.clicks = clicks
 
+
 # custom event for handling new images
 class ImageEvent(QtCore.QEvent):
     def __init__(self):
         super().__init__(QtCore.QEvent.Type(QtCore.QEvent.User + 2))
+
 
 # manages custom events posted from callbacks, then relays as signals to the main widget
 class Signaller(QtCore.QObject):
@@ -52,8 +61,10 @@ class Signaller(QtCore.QObject):
             self.image.emit(self.qw, self.qx, self.qy, self.qz)
         return True
 
+
 # global required for the listen api callbacks
 signaller = Signaller()
+
 
 # 3d render class
 class ScannerWindow(Qt3DExtras.Qt3DWindow):
@@ -102,6 +113,7 @@ class ScannerWindow(Qt3DExtras.Qt3DWindow):
         self.scannerEntity.addComponent(self.scanner)
         self.addTransform()
 
+
 # main widget with controls and ui
 class MainWidget(QtWidgets.QMainWindow):
     def __init__(self, cast, parent=None):
@@ -123,7 +135,7 @@ class MainWidget(QtWidgets.QMainWindow):
         # try to connect/disconnect to/from the probe
         def tryConnect():
             if not cast.isConnected():
-                if cast.connect(ip.text(), int(port.text())):
+                if cast.connect(ip.text(), int(port.text()), "research"):
                     self.statusBar().showMessage("Connected")
                     conn.setText("Disconnect")
                 else:
@@ -186,6 +198,7 @@ class MainWidget(QtWidgets.QMainWindow):
         self.cast.destroy()
         QtWidgets.QApplication.quit()
 
+
 ## called when a new processed image is streamed
 # @param image the scan-converted image data
 # @param width width of the image in pixels
@@ -193,8 +206,9 @@ class MainWidget(QtWidgets.QMainWindow):
 # @param bpp bits per pixel
 # @param micronsPerPixel microns per pixel
 # @param timestamp the image timestamp in nanoseconds
+# @param angle acquisition angle for volumetric data
 # @param imu imu data sets
-def newProcessedImage(image, width, height, bpp, micronsPerPixel, timestamp, imu):
+def newProcessedImage(image, width, height, bpp, micronsPerPixel, timestamp, angle, imu):
     if len(imu) > 0:
         signaller.qw = imu[0].qw
         signaller.qx = imu[0].qx
@@ -203,6 +217,7 @@ def newProcessedImage(image, width, height, bpp, micronsPerPixel, timestamp, imu
         evt = ImageEvent()
         QtCore.QCoreApplication.postEvent(signaller, evt)
     return
+
 
 ## called when a new raw image is streamed
 # @param image the raw pre scan-converted image data, uncompressed 8-bit or jpeg compressed
@@ -213,8 +228,11 @@ def newProcessedImage(image, width, height, bpp, micronsPerPixel, timestamp, imu
 # @param lateral microns per line
 # @param timestamp the image timestamp in nanoseconds
 # @param jpg jpeg compression size if the data is in jpeg format
-def newRawImage(image, lines, samples, bps, axial, lateral, timestamp, jpg):
+# @param rf flag for if the image received is radiofrequency data
+# @param angle acquisition angle for volumetric data
+def newRawImage(image, lines, samples, bps, axial, lateral, timestamp, jpg, rf, angle):
     return
+
 
 ## called when a new spectrum image is streamed
 # @param image the spectral image
@@ -228,12 +246,14 @@ def newRawImage(image, lines, samples, bps, axial, lateral, timestamp, jpg):
 def newSpectrumImage(image, lines, samples, bps, period, micronsPerSample, velocityPerSample, pw):
     return
 
+
 ## called when freeze state changes
 # @param frozen the freeze state
 def freezeFn(frozen):
     evt = FreezeEvent(frozen)
     QtCore.QCoreApplication.postEvent(signaller, evt)
     return
+
 
 ## called when a button is pressed
 # @param button the button that was pressed
@@ -243,14 +263,16 @@ def buttonsFn(button, clicks):
     QtCore.QCoreApplication.postEvent(signaller, evt)
     return
 
+
 ## main function
 def main():
-    cast = pycast.Caster(newProcessedImage, newRawImage, newSpectrumImage, freezeFn, buttonsFn)
+    cast = pyclariuscast.Caster(newProcessedImage, newRawImage, newSpectrumImage, freezeFn, buttonsFn)
     app = QtWidgets.QApplication(sys.argv)
     widget = MainWidget(cast)
     widget.resize(640, 480)
     widget.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
