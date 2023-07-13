@@ -99,3 +99,13 @@ The Cast API allows images and inertial data to be collected in real-time. When 
 Clarius Cloud is a convenient way to store and access images and data. Inertial information can be uploaded to Clarius Cloud after activating the sensor. Raw data can be downloaded from Clarius cloud in a compressed folder for offline analysis; the compressed file contains timestamp_imu.yml which contains the inertial measurements associated with the raw data and images collected.
 
 Each entry in imu.yml file contains the same information as specified in the ClariusPosInfo structure for the Cast API.
+
+## Components
+
+The following IMU components are used in the various versions of Clarius devices:
+
+- Gen 1 / Clarius HD
+  - ST LSM9DS1
+- Clarius HD3
+  - ST LSM6DS0 (gyroscope / accelerometer)
+  - ST LIS2MDL (magnetometer)
